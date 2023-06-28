@@ -89,29 +89,3 @@ char* getString(papplScanSettingsXML* scanSettings, const char* name) {
     xmlFreeDoc(doc);
     return NULL;
 }
-
-char* getString2(papplScanSettingsXML* scanSettings, const char* name, const char* pattern) {
-    const int max_matches = 2;
-    regex_t regex;
-    regmatch_t matches[max_matches];
-
-    if (regcomp(&regex, pattern, REG_EXTENDED) != 0) {
-        fprintf(stderr, "Could not compile regex\n");
-        exit(1);
-    }
-
-    if (regexec(&regex, scanSettings->xml, max_matches, matches, 0) == 0) {
-        size_t match_length = matches[1].rm_eo - matches[1].rm_so;
-        char* result = (char*)malloc(match_length + 1);
-        strncpy(result, settings->xml + matches[1].rm_so, match_length);
-        result[match_length] = '\0';
-
-        regfree(&regex);
-        return result;
-    }
-
-    regfree(&regex);
-    char* empty = (char*)malloc(1);
-    empty[0] = '\0';
-    return empty;
-}
